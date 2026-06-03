@@ -10,6 +10,13 @@ AI Market Trend Radar is an open-source GitHub Actions tool that generates daily
 
 The project is designed as research triage, not investment advice. It helps individual builders and investors understand noisy AI/tech narratives transparently through source-linked reports.
 
+## Current implementation status
+
+- Daily GitHub Actions workflow is implemented, including manual dispatch.
+- `OPENAI_API_KEY` is supported through GitHub Actions repository secrets.
+- A generated sample report exists under `reports/2026-06-03.md`.
+- The scoring pipeline includes tests for core theme detection and emerging-trend noise filtering.
+
 ## Why this project is eligible / important
 
 AI and technology market narratives increasingly emerge from a mix of news, social discussion, and open-source developer activity. Many individual researchers, especially Japanese readers, struggle to follow fast-moving English-language signals. This project provides an auditable OSS workflow that converts public sources into bilingual trend reports, making the research process more accessible and transparent.

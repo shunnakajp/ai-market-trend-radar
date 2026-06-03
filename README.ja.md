@@ -28,8 +28,16 @@ AI/テック市場の話題は、ニュース、SNS、OSSコミュニティで�
 - `reports/YYYY-MM-DD.md` にMarkdown保存
 - 有料金融API不要。公開RSS/Atom中心
 - OpenAI APIによる英日要約
+- `YOU`、`DATA`、`LINK` のような汎用語が新興トレンドに混ざらないためのノイズ除外
 - 銘柄ではなくテーマ中心
 - MIT License
+
+## 現在の状態
+
+- GitHub Actionsで日次生成・手動実行ができる状態です。
+- Repository Secretの `OPENAI_API_KEY` により、OpenAI要約を有効化できます。
+- 生成済みサンプルレポート: [`reports/2026-06-03.md`](reports/2026-06-03.md)
+- テーマスコアリングと新興トレンドのノイズ除外はテスト済みです。
 
 ## クイックスタート
 

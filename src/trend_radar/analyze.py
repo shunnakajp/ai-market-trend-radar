@@ -13,6 +13,89 @@ from .config import REFERENCE_TICKERS, THEME_KEYWORDS
 from .fetch import FeedItem
 
 
+GENERIC_EMERGING_STOPWORDS = {
+    # Common English / headline glue words.
+    "about",
+    "after",
+    "all",
+    "also",
+    "and",
+    "are",
+    "but",
+    "can",
+    "for",
+    "from",
+    "has",
+    "have",
+    "how",
+    "into",
+    "more",
+    "new",
+    "news",
+    "now",
+    "over",
+    "says",
+    "that",
+    "the",
+    "their",
+    "they",
+    "this",
+    "what",
+    "when",
+    "why",
+    "will",
+    "with",
+    "you",
+    "your",
+    # Too broad for a theme-level market radar.
+    "ai",
+    "data",
+    "link",
+    "market",
+    "markets",
+    "stock",
+    "stocks",
+    "tech",
+    "technology",
+    "company",
+    "companies",
+    "business",
+    "comments",
+    "infrastructure",
+    "invest",
+    "investing",
+    "investment",
+    "investor",
+    "investors",
+    "billion",
+    "million",
+    "year",
+    "years",
+    "today",
+    "week",
+    "could",
+    "would",
+    "should",
+    "just",
+    "like",
+    "only",
+    "submitted",
+    "stars",
+}
+
+
+THEME_KEYWORD_TOKENS = {
+    token
+    for keywords in THEME_KEYWORDS.values()
+    for keyword in keywords
+    for token in keyword.lower().replace("/", " ").split()
+} | {
+    token
+    for theme in THEME_KEYWORDS
+    for token in theme.lower().replace("/", " ").split()
+}
+
+
 @dataclass
 class Trend:
     theme: str
@@ -28,6 +111,17 @@ class Trend:
 
 def _tokenize(text: str) -> List[str]:
     return re.findall(r"[a-zA-Z][a-zA-Z0-9+.-]{2,}", text.lower())
+
+
+def _is_emerging_candidate(word: str) -> bool:
+    if word in GENERIC_EMERGING_STOPWORDS:
+        return False
+    if word in THEME_KEYWORD_TOKENS or (word.endswith("s") and word[:-1] in THEME_KEYWORD_TOKENS):
+        return False
+    # Avoid accidental URL fragments, ticker punctuation, and low-information stems.
+    if len(word) < 4 or word.startswith(("http", "www")):
+        return False
+    return True
 
 
 def score_trends(items: List[FeedItem], top_n: int = 10) -> List[Trend]:
@@ -53,13 +147,12 @@ def score_trends(items: List[FeedItem], top_n: int = 10) -> List[Trend]:
     common = collections.Counter()
     for item in items:
         common.update(_tokenize(f"{item.title} {item.summary}"))
-    stop = {"from", "with", "that", "this", "will", "into", "over", "after", "about", "says", "news", "more", "your", "have", "has", "are", "for", "the", "and", "market", "stock", "stocks"}
-    for word, count in common.most_common(30):
-        if word in stop or count < 3:
+    for word, count in common.most_common(50):
+        if not _is_emerging_candidate(word) or count < 3:
             continue
         theme = f"Emerging: {word.upper()}"
         refs = [item for item in items if word in f"{item.title} {item.summary}".lower()][:5]
-        if refs:
+        if len(refs) >= 3:
             theme_scores[theme] = max(theme_scores.get(theme, 0), count * 0.6)
             theme_refs[theme] = refs
             theme_hits[theme].update([word])

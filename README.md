@@ -26,8 +26,16 @@ This project turns those noisy signals into a transparent daily report:
 - Markdown-only output under `reports/YYYY-MM-DD.md`
 - Public RSS/Atom sources; no paid market data API required
 - OpenAI-powered bilingual summarization
+- Noise filtering for generic emerging terms, so reports avoid low-quality themes such as `YOU`, `DATA`, or `LINK`
 - Theme-first design; tickers are references only
 - MIT licensed
+
+## Current status
+
+- GitHub Actions workflow is configured for daily generation and manual runs.
+- `OPENAI_API_KEY` can be supplied as a repository secret for bilingual AI summaries.
+- A generated sample report is available at [`reports/2026-06-03.md`](reports/2026-06-03.md).
+- Local tests cover theme scoring and emerging-trend noise filtering.
 
 ## Example report structure
 
